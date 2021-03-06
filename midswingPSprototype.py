@@ -79,8 +79,8 @@ def setup():
         else:
             print('Incorrect password. Please do not enter ADMIN as nickname!')
             nickname = singlevariableselect('preferred nickname')
-            admin = True
-            sadmin = True
+            admin = False
+            sadmin = False
     else:
         admin = False
         sadmin = False

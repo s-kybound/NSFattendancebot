@@ -10,6 +10,9 @@ on = True
 #when toggled false, will initiate shutdown
 workweek = ('Monday','Tuesday','Wednesday','Thursday','Friday')
 #tuple to convert numeral days to words
+userno = 0 
+#placeholder for telegram usernumber
+userbase = {}
 def turnonoff():
     #admin function
     global on
@@ -20,7 +23,6 @@ def singlevariableselect(variable):
     while confirm:
         print('May I have your',variable,'?')
         entry = input()
-        entry = entry.upper()
         print('May I confirm that your',variable,'is',entry,'?(y/n)')
         yesno = input()
         if yesno.lower() == 'y':
@@ -53,31 +55,32 @@ def multioptionselect(variable,*options):
 
 def setup():
     #called when /start or reconfiguring settings
+    global userno
+    global userbase
+    usernum = str(userno)
+    userno += 1
+    print('Do not worry about entering the right case, it is automatic!\n')
     nickname = singlevariableselect('preferred nickname')
-    rank = singlevariableselect('abbreviated rank')
-    name = singlevariableselect('full name')
+    rank = singlevariableselect('abbreviated rank').upper()
+    name = singlevariableselect('full name').title()
     service = multioptionselect('service status','REG','NSF')
-    print('There are 2 options for the Parade State reminders, Daily and Weekly.')
-    print('Option 1 (Daily) will message you on every workday at 0800H on your presence in OCS HQ(or reason of absence).')
-    print('Option 2 (Weekly) will message you in the weekend on your attendance pattern for the entire work week. In case of emergency, in the weekday you are still able to change your attendance options.')
-    reminderstate = multioptionselect('preferred reminder option','Daily','Weekly')
-    if reminderstate == 'Weekly':
-        reminderstate = multioptionselect('preferred weekly option','WeeklySaturday','WeeklySunday')
-    if nickname == 'ADMIN':
+    if nickname.upper() == 'ADMIN' or nickname.upper() == 'SUPERADMIN':
         passkey = input('ADMIN access requested. Enter password: ')
         if passkey == 'Midswing123':
-            print('Roger. Recognised as ADMIN.')
+            print('Roger. Recognised as ADMIN. Please enter actual nickname')
             admin = True
             sadmin = False
-            nickname = 'ADMIN'
+            nickname = singlevariableselect('actual nickname')
         elif passkey == 'IatoaoK2':
-            print('Roger. Recognised as SUPERADMIN.')
+            print('Roger. Recognised as SUPERADMIN. Please enter actual nickname')
             admin = True
             sadmin = True
-            nickname = 'SUPERADMIN'
+            nickname = singlevariableselect('actual nickname')
         else:
             print('Incorrect password. Please do not enter ADMIN as nickname!')
             nickname = singlevariableselect('preferred nickname')
+            admin = True
+            sadmin = True
     else:
         admin = False
         sadmin = False
@@ -86,30 +89,16 @@ def setup():
     print('Rank =', rank)
     print('Name =', name)
     print('Service status =', service)
-    print('Reminder option =', reminderstate)
     if admin == True:
         print('ADMIN access =', admin)
         print('SUPERADMIN access =', sadmin)
     yesno = input('Confirm?(y/n)')
     if yesno == 'y':
         print('YAY! :D Now submitting your information,', nickname, '.')
-        return [nickname,rank,name,service,reminderstate,admin,sadmin]
-
-def weeklyoption():
-    #reminder function to be created
-    global workweek
-    global nickname #to be taken from usersettings
-    count = 0
-    attnlist = []
-    while count <= 4:
-        print(nickname,', for',workweek[count],',')
-        attnlist.append(multioptionselect('attendance','here','nothere'))
-        count += 1
-    return attnlist
+        userbase.update({usernum: [[nickname,rank,name,service,admin,sadmin]]})
 
 '''to be done before ALPHA
 telegram functionality
-dailyoption
 actual reminder function
 database system
 admin access tools

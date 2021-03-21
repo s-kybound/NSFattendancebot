@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ATTENDANCE PROGRAM V0.7 FUNCTIONAL BETA
+ATTENDANCE PROGRAM V0.8 FUNCTIONAL BETA
 Created on Tue Nov 24 23:06:18 2020
 @author: pi
 """
@@ -103,7 +103,7 @@ def uploadmemories(): #overwrites the data inside of the current database.txt fi
 
 @bot.message_handler(commands=['info'])
 def info(message): #returns info on bot
-    bot.reply_to(message, '''Attendancebot v0.7
+    bot.reply_to(message, '''Attendancebot v0.8
 -designed by skybound
 current functionality:
 database saving
@@ -486,7 +486,7 @@ try:
     currentdatabase = 'database' + today.strftime('%d%m%y') + '.txt'
     newday()
     run_threaded(on)
-    schedule.every(2.5).hours.do(run_threaded, uploadmemories) #arbitrary value. just make sure one of these don't happen at 00:00, a reboot is scheduled there
+    schedule.every(1.25).hours.do(run_threaded, uploadmemories) #arbitrary value. just make sure one of these don't happen at 00:00, a reboot is scheduled there
     #schedule.every().day.at('00:05').do(run_threaded, newday) obsolete due to initial.sh resetting at midnight
     #schedule.every().day.at('00:00').do(run_threaded, off) obsolete due to initial.sh resetting at midnight
     starttime = 'HH:MM' #string to denote time to activate attendance, 24H clock in format 'HH:MM'

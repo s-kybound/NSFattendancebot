@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MIDS WING ATTENDANCE PROGRAM V0.7 FUNCTIONAL BETA
+ATTENDANCE PROGRAM V0.7 FUNCTIONAL BETA
 Created on Tue Nov 24 23:06:18 2020
 @author: pi
 """
@@ -489,7 +489,7 @@ try:
     schedule.every(2).hours.do(run_threaded, uploadmemories)
     #schedule.every().day.at('00:05').do(run_threaded, newday) obsolete due to initial.sh resetting at midnight
     #schedule.every().day.at('00:00').do(run_threaded, off) obsolete due to initial.sh resetting at midnight
-    starttime = 'ENTER TIME HERE' #string to denote time to activate attendance, 24H clock in format 'HH:MM'
+    starttime = 'HH:MM' #string to denote time to activate attendance, 24H clock in format 'HH:MM'
     schedule.every().monday.at(starttime).do(run_threaded, autoattendancetimer)
     schedule.every().tuesday.at(starttime).do(run_threaded, autoattendancetimer)
     schedule.every().wednesday.at(starttime).do(run_threaded, autoattendancetimer)

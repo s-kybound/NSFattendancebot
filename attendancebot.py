@@ -486,7 +486,7 @@ try:
     currentdatabase = 'database' + today.strftime('%d%m%y') + '.txt'
     newday()
     run_threaded(on)
-    schedule.every(2).hours.do(run_threaded, uploadmemories)
+    schedule.every(2.5).hours.do(run_threaded, uploadmemories) #arbitrary value. just make sure one of these don't happen at 00:00, a reboot is scheduled there
     #schedule.every().day.at('00:05').do(run_threaded, newday) obsolete due to initial.sh resetting at midnight
     #schedule.every().day.at('00:00').do(run_threaded, off) obsolete due to initial.sh resetting at midnight
     starttime = 'HH:MM' #string to denote time to activate attendance, 24H clock in format 'HH:MM'

@@ -53,5 +53,5 @@ This system will also require external modules, in this case schedule and pyTele
 
 ! pip install schedule
 
-As mentioned, this system requires a computer to run on. I would recommend using a SBC such as a low-cost Raspberry Pi for this.
+As mentioned, this system requires a computer to run on. I would recommend using a SBC such as a low-cost Raspberry Pi (a model with wifi acceess) for this.
 This system requires a new Telegram bot account to run on. To do this, go to BotFather on Telegram via @BotFather to create a new bot.

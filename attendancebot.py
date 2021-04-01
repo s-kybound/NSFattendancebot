@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 ATTENDANCE PROGRAM V0.10 STABILITY TEST
 Created on Tue Nov 24 23:06:18 2020
-@author: pi
 """
 import telebot
 import time

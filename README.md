@@ -60,10 +60,15 @@ Setup:
 Upon downloading the code in your preferred IDE, set up the variables which are near the start of the script, replacing all text within the single quotation marks. It will look exactly like this:
 
 key = 'Insert the key for yout telegram bot here.'
-password = 'Insert the password for admins here.'  #admin password
-highpassword = 'Insert the password for superadmins here.'  #superadmin password
-starttime = 'HH:MM'  #string to denote time to activate autoattendance, 24H clock in format 'HH:MM'
-endtime = 'HH:MM'  #string to denote time to deactivate autoattendance, 24H clock in format 'HH:MM'
+
+password = 'Insert the password for admins here.'
+
+highpassword = 'Insert the password for superadmins here.'
+
+starttime = 'HH:MM'
+
+endtime = 'HH:MM'
+
 ranks = [
     'COL', 'SLTC', 'LTC',
     'MAJ', 'CPT', 'LTA',
@@ -71,7 +76,8 @@ ranks = [
     'ME1', 'DX7', 'DX4',
     '1WO', '2WO', 'CFC',
     'CPL', 'LCP', 'PTE'
-    ]  #ranks as required
+    ] 
+    
 options = [
     'WFH', 'WFH(AM)',
     'WFH(PM)', 'FULL DAY LEAVE',
@@ -81,4 +87,7 @@ options = [
     'REPORTING SICK', 'HOSPITALIZED',
     'ON COURSE', 'OUTSTATION',
     'SAILING', 'OVERSEAS'
-    ]  #options for absence as required
+    ]  
+    
+After which the bot can be run. Test if the bot is alive with /start.
+From then on, the bot will begin to leave a file, labelled as 'databaseDDMMYY.txt' in your system files. This is the bot's backup memory in case of system shutdown. It will only leave one database file in the system.

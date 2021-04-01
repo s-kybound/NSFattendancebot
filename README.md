@@ -89,5 +89,11 @@ options = [
     'SAILING', 'OVERSEAS'
     ]  
     
-After which the bot can be run. Test if the bot is alive with /start.
+After which, the bot can be run inside the IDE. For this method, the IDE must be left open for the bnot to continmue running. Test if the bot is alive with /start.
 From then on, the bot will begin to leave a file, labelled as 'databaseDDMMYY.txt' in your system files. This is the bot's backup memory in case of system shutdown. It will only leave one database file in the system, deleting all older database files except the file of the day itself.
+
+If the bot is run on a Raspberry Pi or other linux/unix based computers, the bot can be set up to run on bootup. In the script /etc/rc.local, add this line above the 'exit 0' line:
+
+'sudo python3 /path to program(change this accordingly/attendancebot.py'
+
+Either way, the program should run in the background, not interrupting usage of the computer for other purposes.

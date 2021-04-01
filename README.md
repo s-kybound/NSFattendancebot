@@ -39,11 +39,11 @@ As for reasons for absence, I have left a general list of these in the bot, howe
 
 Defining a few things:
 
-PRESENT - when the bot asks you for attendance, PRESENT in this case means physically present in camp.
+PRESENT - When the bot asks you for attendance, PRESENT in this case means physically present in camp.
 
-ADMIN - a user IN the unit, meaning he is subject to the attendance system and will appear when returning information on attendance. Has admin powers to propmt for attendance, receive attendance data etc.
+ADMIN - A user IN the unit, meaning he is subject to the attendance system and will appear when returning information on attendance. Has admin powers to propmt for attendance, receive attendance data etc.
 
-SUPERADMIN - a user OUTSIDE of the unit, by default. not subject to attendance, but holds all admin powers as well as superadmin powers allowing him to make announcements via the system, etc.
+SUPERADMIN - A user OUTSIDE of the unit, by default. Not subject to attendance (by default), but holds all admin powers as well as superadmin powers allowing him to make announcements via the system, etc.
 
 Requirements:
 This system runs on python and will require a python IDE, such as spyder.

@@ -90,4 +90,4 @@ options = [
     ]  
     
 After which the bot can be run. Test if the bot is alive with /start.
-From then on, the bot will begin to leave a file, labelled as 'databaseDDMMYY.txt' in your system files. This is the bot's backup memory in case of system shutdown. It will only leave one database file in the system.
+From then on, the bot will begin to leave a file, labelled as 'databaseDDMMYY.txt' in your system files. This is the bot's backup memory in case of system shutdown. It will only leave one database file in the system, deleting all older database files except the file of the day itself.

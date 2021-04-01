@@ -1,5 +1,5 @@
-# attendancebot
-This is a simple attendance bot that I have designed for NSF ASAs to use. As it is, it is designed for usage in more office-like environments.
+# NSFattendancebot
+This is a simple attendance bot that I have designed for NSF ASAs to use. As it is, it is designed for usage in more office-like environments. I would assume such a system is most suitable for Navy units, given the high Navy activity on Telegram.
 It prompts users for their attendance every 30 minutes, based on start and end times that you enter. After which, admins can access the attendance data to enter into parade state.
 
 It is currently designed to run on a computer that is active, at least for office hours. It can be run 24/7 without issue. It is able to save and restore its information,

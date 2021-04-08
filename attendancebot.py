@@ -124,7 +124,7 @@ def uploadmemories():  #overwrites the data inside of the current database.txt f
 
 @bot.message_handler(commands=['info'])
 def info(message):  #returns info on bot
-    bot.reply_to(message, '''ATTENDANCE PROGRAM V0.10 STABILITY TEST
+    bot.reply_to(message, '''ATTENDANCE PROGRAM V1.0 RELEASE
 -Designed by skybound
 Current functionality:
 Database saving
@@ -144,7 +144,7 @@ Very little exception handling capability
 def start(message):  #enters, or reenters, a user's data into the system as well as the external database.txt
     global userbase
     chat_id = message.chat.id
-    userbase[str(chat_id)] = ['PLACEHOLDER','PLACEHOLDER','PLACEHOLDER','PLACEHOLDER','PLACEHOLDER','PLACEHOLDER','PLACEHOLDER'] #in the end, you should not see these in the final userbase or database.txt
+    userbase[str(chat_id)] = ['PLACEHOLDER'] * 7 #in the end, you should not see these in the final userbase or database.txt
     markup = telebot.types.ForceReply()
     nmessage = bot.reply_to(message, '''
 Don't worry about entering the right case, it's automatic!
@@ -556,11 +556,9 @@ def holiday(message):  #denotes that the day is a holiday
     try:
         if userbase[user][4] == True:
             for users in userbase.keys():
-                if userbase[users][6] == 'NIL':  #selects everyone who hasn't responded
-                    userbase[users][6] = 'HOLIDAY'  #placeholder value to deter bot from prompting
                 if userbase[users][4] == True:
                     bot.send_message(users,'%s has turned today into a holiday' % (userbase[user][1]+' '+userbase[user][2]))  #alerts admins
-            uploadmemories()
+            holidaycont()
         else:
             bot.reply_to(message,'%s, you do not have the admin rights to do this.' % userbase[user][0])
     except KeyError:
@@ -591,6 +589,19 @@ def autoattendancetimer():  #repeats autoattendance every 30 minutes to make it 
 def stopattendance():
     schedule.clear('daily')
 
+def setauto():
+    schedule.every().monday.at(starttime).do(run_threaded, autoattendancetimer).tag('weekly')
+    schedule.every().tuesday.at(starttime).do(run_threaded, autoattendancetimer).tag('weekly')
+    schedule.every().wednesday.at(starttime).do(run_threaded, autoattendancetimer).tag('weekly')
+    schedule.every().thursday.at(starttime).do(run_threaded, autoattendancetimer).tag('weekly')
+    schedule.every().friday.at(starttime).do(run_threaded, autoattendancetimer).tag('weekly')
+    return schedule.CancelJob
+    
+def holidaycont():
+    global endtime
+    schedule.clear('weekly')
+    schedule.every().day.at(endtime).do(run_threaded, setauto)
+    
 try:
     today = date.today()
     userbase = {}
@@ -599,11 +610,7 @@ try:
     run_threaded(on)
     schedule.every().day.at('00:05').do(run_threaded, newday)
     schedule.every().day.at(endtime).do(run_threaded, stopattendance)
-    schedule.every().monday.at(starttime).do(run_threaded, autoattendancetimer)
-    schedule.every().tuesday.at(starttime).do(run_threaded, autoattendancetimer)
-    schedule.every().wednesday.at(starttime).do(run_threaded, autoattendancetimer)
-    schedule.every().thursday.at(starttime).do(run_threaded, autoattendancetimer)
-    schedule.every().friday.at(starttime).do(run_threaded, autoattendancetimer)
+    setauto()
     while 1:
         schedule.run_pending()
         time.sleep(1)

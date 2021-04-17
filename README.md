@@ -1,7 +1,7 @@
 # NSFattendancebot
 DISCLAIMER
 
-I built this bot for self-interest, as a way to improve my own programming skill. I take no responsibility for what you do with this project, and will not be held responsible for any damages incurred.
+I built this bot for self-interest, as a way to improve my own programming skill, and to improve 'quality-of-life' at work. I take no responsibility for what you do with this project, and will not be held responsible for any damages incurred.
 
 
 

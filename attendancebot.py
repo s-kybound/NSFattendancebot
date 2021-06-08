@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-ATTENDANCE PROGRAM V1.0 RELEASE
+ATTENDANCE PROGRAM V1.2 SECURITY
 Created on Tue Nov 24 23:06:18 2020
+@author: pi
 """
 import telebot
 import time
@@ -9,9 +12,10 @@ import schedule
 import os
 from datetime import date, datetime, timedelta
 
-key = 'INSERT YOUR TELEGRAM BOT KEY HERE'
-password = 'INSERT YOUR GENERAL USAGE ADMIN PASSWORD HERE'  #admin password
-highpassword = 'INSERT YOUR SUPERADMIN PASSWORD HERE'  #superadmin password
+key = 'Your bot token key here'
+passw = 'A password for everyone meant to use the bot' 
+password = 'A password only for admins'  #admin password
+highpassword = 'A password only for superadmins'  #superadmin password
 starttime = 'HH:MM'  #string to denote time to activate autoattendance, 24H clock in format 'HH:MM'
 endtime = 'HH:MM'  #string to denote time to deactivate autoattendance, 24H clock in format 'HH:MM'
 ranks = [
@@ -124,7 +128,7 @@ def uploadmemories():  #overwrites the data inside of the current database.txt f
 
 @bot.message_handler(commands=['info'])
 def info(message):  #returns info on bot
-    bot.reply_to(message, '''ATTENDANCE PROGRAM V1.0 RELEASE
+    bot.reply_to(message, '''ATTENDANCE PROGRAM V1.2 SECURITY
 -Designed by skybound
 Current functionality:
 Database saving
@@ -134,23 +138,35 @@ Basic attendance formatting for admins
 Basic holiday functionality
 Leaving capability
 Long term absence functionality
+Basic error handling
+Resistance to unauthorized entry
 Limitations:
 The coding is really horrible
 Particulars system is very basic
-Very little exception handling capability
 ''')
 
 @bot.message_handler(commands=['start'])
 def start(message):  #enters, or reenters, a user's data into the system as well as the external database.txt
-    global userbase
-    chat_id = message.chat.id
-    userbase[str(chat_id)] = ['PLACEHOLDER'] * 7 #in the end, you should not see these in the final userbase or database.txt
     markup = telebot.types.ForceReply()
-    nmessage = bot.reply_to(message, '''
+    nmessage = bot.reply_to(message, 'Please enter the password to join the group.', reply_markup = markup)
+    bot.register_next_step_handler(nmessage, procpass)
+    
+def procpass(message):  #deals with unauthorized entry
+    global userbase
+    global passw
+    chat_id = message.chat.id
+    entry = message.text.strip()  #cleans up extra spaces
+    if entry == passw:
+        bot.send_message(chat_id,'Password is correct, entry approved.')
+        userbase[str(chat_id)] = ['PLACEHOLDER'] * 7 #in the end, you should not see these in the final userbase or database.txt
+        markup = telebot.types.ForceReply()
+        nmessage = bot.reply_to(message, '''
 Don't worry about entering the right case, it's automatic!
 How would you like me to address you?
 ''', reply_markup = markup)
-    bot.register_next_step_handler(nmessage, procnick)
+        bot.register_next_step_handler(nmessage, procnick)
+    else:
+        bot.send_message(chat_id,'Password is incorrect.')
 
 def procnick(message):  #processes the nickname entered and prompts for rank
     global userbase
@@ -207,7 +223,12 @@ Admin access = %s
 Superadmin access = %s
 ''' % (userbase[user][0],userbase[user][1],userbase[user][2],userbase[user][3],userbase[user][4],userbase[user][5]), reply_markup=markup)
     uploadmemories()
-
+    for users in userbase.keys():
+        if userbase[users][4] == True:
+            bot.send_message(users,'New user %s' % (userbase[user][1]+' '+userbase[user][2]+' ,'+userbase[user][3]))  #alerts admins
+        if userbase[users][5] == True:
+            bot.send_message(users,'%s' % (user+' '+userbase[user]))  #alerts superadmin
+            
 @bot.message_handler(commands=['test'])
 def test(message):  #returns your data in the system. use to see if bot is alive/ if data is incorrect
     global userbase
@@ -241,7 +262,7 @@ def manualattendance(message):  #to enter your attendance before the bot decides
         bot.send_message(chat_id,'Your particulars are not in the system!')
     else:
         bot.register_next_step_handler(nmessage, procprescence)
-        
+
 @bot.message_handler(commands=['poke'])
 def poke(message):  #for admins to directly take over in annoying everyone who hasn't responded
     global userbase
@@ -249,15 +270,20 @@ def poke(message):  #for admins to directly take over in annoying everyone who h
     user = str(chat_id)
     try:
         if userbase[user][4] == True:
-            bot.reply_to(message,'%s, poking everyone now.' % userbase[user][0])
+            for users in userbase.keys():
+                if userbase[users][4] == True:
+                    bot.send_message(users,'%s has poked everyone' % (userbase[user][1]+' '+userbase[user][2]))  #alerts admins
             yesno = ['PRESENT', 'ABSENT']
             markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard = True)
             for option in yesno:
                 markup.add(option)
-            for user in userbase.keys():  #selectively messages everyone who hasn't responded
-                if userbase[user][6] == 'NIL':
-                    nmessage = bot.send_message(int(user),'%s, it is time %s! Are you present today?' % (userbase[user][0], datetime.now().strftime('%H:%M:%S')), reply_markup = markup)
-                    bot.register_next_step_handler(nmessage, procprescence)
+            for users in userbase.keys():  #selectively messages everyone who hasn't responded
+                if userbase[users][6] == 'NIL':
+                    try:
+                        nmessage = bot.send_message(int(users),'%s, it is time %s! Are you present today?' % (userbase[user][0], datetime.now().strftime('%H:%M:%S')), reply_markup = markup)
+                        bot.register_next_step_handler(nmessage, procprescence)
+                    except telebot.apihelper.ApiTelegramException:
+                        print(userbase[user])  #this will return the particulars of someone who has either blocked or stopped the bot without /removeme. This previously broke the
                 else:
                     continue
         else:
@@ -273,8 +299,11 @@ def autoattendance():  #the bot's most amazing function, doing (your) job of hun
         markup.add(option)
     for user in userbase.keys():
         if userbase[user][6] == 'NIL':  #selectively messages everyone who hasn't responded
-            nmessage = bot.send_message(int(user),'%s, it is time %s! Are you present today?' % (userbase[user][0], datetime.now().strftime('%H:%M:%S')), reply_markup = markup)
-            bot.register_next_step_handler(nmessage, procprescence)
+            try:
+                nmessage = bot.send_message(int(user),'%s, it is time %s! Are you present today?' % (userbase[user][0], datetime.now().strftime('%H:%M:%S')), reply_markup = markup)
+                bot.register_next_step_handler(nmessage, procprescence)
+            except telebot.apihelper.ApiTelegramException:
+                print(userbase[user])
         else:
             continue
 
@@ -417,7 +446,7 @@ def removeme(message):  #deletes your data from the userbase and database.txt
     else:
         bot.reply_to(message,'Data removed from system.')
         uploadmemories()
-        
+
 @bot.message_handler(commands=['help'])
 def help(message):
     bot.reply_to(message,'''/start - Enter/reenter your particulars.
@@ -448,7 +477,7 @@ def feedback(message):  #sends feedback with time and name to feedback.txt
         bot.send_message(message.chat.id,'Your particulars are not in the system!')
     else:
         bot.register_next_step_handler(nmessage, procfeedback)
-        
+
 def procfeedback(message):  #processes feedback
     global today
     global userbase
@@ -471,7 +500,7 @@ def admin(message):  #function to request for admin or superadmin access
         bot.send_message(message.chat.id,'Your particulars are not in the system!')
     else:
         bot.register_next_step_handler(nmessage, procadmin)
-        
+
 def procadmin(message):  #processes password entered
     global userbase
     global password
@@ -481,6 +510,9 @@ def procadmin(message):  #processes password entered
     attempt = message.text.strip()  #cleans up extra spaces
     markup = telebot.types.ReplyKeyboardRemove()
     if attempt == password:
+        for users in userbase.keys():
+                if userbase[users][4] == True:
+                    bot.send_message(users,'%s has become an admin' % (userbase[user][1]+' '+userbase[user][2]))  #alerts admins
         userbase[user][4] = True
         userbase[user][5] = False
         bot.reply_to(message, 'Recognised as admin.', reply_markup = markup)
@@ -509,7 +541,7 @@ def lta(message):
             nmessage = bot.send_message(user,'%s, are you present today?' % userbase[user][0], reply_markup = markup)
             bot.register_next_step_handler(nmessage, procprescence)
         else:  #activates status
-            bot.reply_to(message,'Long-term absence activated. Please deactivate on the morning this absence ends.') 
+            bot.reply_to(message,'Long-term absence activated. Please deactivate on the morning this absence ends.')
             userbase[user][6] = 'LONG TERM ABSENCE'  #placeholder value to deter bot from prompting
             uploadmemories()
             markup = telebot.types.ForceReply()
@@ -517,12 +549,12 @@ def lta(message):
             bot.register_next_step_handler(nmessage, proclta)
     except KeyError:
         bot.send_message(message.chat.id,'Your particulars are not in the system!')
-            
+
 def proclta(message):  #alerts admins on reason for absence
     global userbase
     chat_id = message.chat.id
     user = str(chat_id)
-    bot.reply_to(message, 'Reason sent to admins.')  
+    bot.reply_to(message, 'Reason sent to admins.')
     for users in userbase.keys():
         if userbase[users][4] == True:
             bot.send_message(users,'%s has activated long term absence for reason: %s' % ((userbase[user][1]+' '+userbase[user][2]), message.text.strip()))
@@ -545,7 +577,10 @@ def sadminbroadcast(message):  #broadcasts superadmin message
 def procsbroadcast(message):
     global userbase
     for user in userbase.keys():
-        bot.send_message(user,'-SUPERADMIN BROADCAST-\n%s' % message.text)
+        try:
+            bot.send_message(user,'-SUPERADMIN BROADCAST-\n%s' % message.text)
+        except telebot.apihelper.ApiTelegramException:
+            print(userbase[user])
 
 @bot.message_handler(commands=['holiday'])
 def holiday(message):  #denotes that the day is a holiday
@@ -572,7 +607,7 @@ def on():
     global bot
     print('bot active')
     bot.infinity_polling()
-    
+
 def off():
     global bot
     bot.stop_polling()
@@ -582,10 +617,10 @@ def autoattendancetimer():  #repeats autoattendance every 30 minutes to make it 
     global userbase
     for users in userbase.keys():
         if userbase[users][4] == True:
-            bot.send_message(users,'autoattendance has started')
+            bot.send_message(users,'Prompting for attendance has begun.')
     autoattendance()
     schedule.every(30).minutes.do(run_threaded, autoattendance).tag('daily')
-    
+
 def stopattendance():
     schedule.clear('daily')
 
@@ -596,12 +631,12 @@ def setauto():
     schedule.every().thursday.at(starttime).do(run_threaded, autoattendancetimer).tag('weekly')
     schedule.every().friday.at(starttime).do(run_threaded, autoattendancetimer).tag('weekly')
     return schedule.CancelJob
-    
+
 def holidaycont():
     global endtime
     schedule.clear('weekly')
     schedule.every().day.at(endtime).do(run_threaded, setauto)
-    
+
 try:
     today = date.today()
     userbase = {}

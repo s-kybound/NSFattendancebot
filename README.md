@@ -29,15 +29,15 @@ It has the following commands:
 
 /test - Returns the particulars you have in the system.
 
+/documentation - Shows the GitHub page of the bot.
+
 /adminaccess - Password protected. Grants superadmin or admin access if successful.
 
 /longtermabsence - For long-duration leaves or events such as overseas exercise. Use on first and last day of leave.
 
 /poke - ADMIN command. Reminds anyone who hasn't entered attendance to do so.
 
-/getsimpleps - ADMIN command. Returns total and present strength.
-
-/getfullps - ADMIN command. Returns name and reasoning of those absent.
+/getps - ADMIN command. Returns name and reasoning of those absent.
 
 /holiday - ADMIN command. DEACTIVATES autoattendance for the day by assigning everyone(who hasn't replied) a HOLIDAY value.
 

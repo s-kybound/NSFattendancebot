@@ -241,7 +241,7 @@ def poke(message):  #for admins to directly take over in annoying everyone who h
             for option in yesno:
                 markup.add(option)
             for users in userbase.keys():  #selectively messages everyone who hasn't responded
-                if userbase[user][4] == 'NIL':
+                if userbase[users][4] == 'NIL':
                     try:
                         if ampmsystem == True:
                             nmessage = bot.send_message(int(users),'%s, it is time %s! Are you present today (AM)?' % (userbase[users][0], datetime.now().strftime('%H:%M:%S')), reply_markup = markup)
@@ -249,7 +249,7 @@ def poke(message):  #for admins to directly take over in annoying everyone who h
                             nmessage = bot.send_message(int(users),'%s, it is time %s! Are you present today?' % (userbase[users][0], datetime.now().strftime('%H:%M:%S')), reply_markup = markup)
                         bot.register_next_step_handler(nmessage, procAM)
                     except telebot.apihelper.ApiTelegramException:
-                        print(userbase[user])  #this will return the particulars of someone who has either blocked or stopped the bot without /removeme. This previously broke the bot.
+                        print(userbase[users])  #this will return the particulars of someone who has either blocked or stopped the bot without /removeme. This previously broke the bot.
                 else:
                     continue
         else:

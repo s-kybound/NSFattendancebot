@@ -56,7 +56,6 @@ def newday():  #upon booting, searches for the database.txt for the current day.
     global userbase
     global today
     global database
-    global sadmininunit
     today = date.today()
     print('Attempting to restore database...')
     try:

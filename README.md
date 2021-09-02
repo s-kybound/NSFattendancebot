@@ -37,7 +37,7 @@ It has the following commands:
 
 /poke - ADMIN command. Reminds anyone who hasn't entered attendance to do so.
 
-/getps - ADMIN command. Returns name and reasoning of those absent.
+/getfullps - ADMIN command. Returns name and reasoning of those absent.
 
 /holiday - ADMIN command. DEACTIVATES autoattendance for the day by assigning everyone(who hasn't replied) a HOLIDAY value.
 

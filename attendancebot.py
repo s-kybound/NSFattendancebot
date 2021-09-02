@@ -360,7 +360,7 @@ def procPM2(message):  #process additional attendance prompt on reason of absenc
     userbase[user][5] = attendance
     uploadmemories()
 
-@bot.message_handler(commands=['getps'])
+@bot.message_handler(commands=['getfullps'])
 def PS(message):  #returns more detailed data on who isn't here - reason, followed by total number, then rank + names, ordered alphabetically by their ranks
     global userbase
     global today
@@ -465,7 +465,7 @@ def help(message):
 /adminaccess - Password protected. Grants superadmin or admin access if successful.
 /longtermabsence - For long-duration leaves or events such as overseas exercise. Use on first and last day of leave.
 /poke - ADMIN command. Reminds anyone who hasn't entered attendance to do so.
-/getps - ADMIN command. Returns name and reasoning of those absent.
+/getfullps - ADMIN command. Returns name and reasoning of those absent.
 /holiday - ADMIN command. DEACTIVATES autoattendance for the day.
 /superadminbroadcast - SUPERADMIN command. Broadcasts a message to all users of the bot.
 ''')

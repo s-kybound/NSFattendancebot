@@ -7,10 +7,10 @@ I built this bot for self-interest, as a way to improve my own programming skill
 
 ABOUT
 
-This is a simple attendance bot that I have designed for NSF ASAs to use. As it is, it is designed for usage in more office-like environments. I would assume such a system is most suitable for Navy units, given the high Navy activity on Telegram.
+This is a simple attendance bot that I have designed for NSF ASAs to use. As it is, it is designed for usage in more office-like environments.
 It prompts users for their attendance every 30 minutes, based on start and end times that you enter. After which, admins can access the attendance data to enter into parade state.
 
-It is currently designed to run on a (Linux-based) computer that is active, at least for office hours. It can be run 24/7 without issue. It is able to save and restore its information,
+It is designed to run on a (Linux-based) computer that is active, at least for office hours. It can be run 24/7 without issue. It is able to save and restore its information,
 however, for security purposes, it deletes any previous day information after reloading it into its system.
 
 It has the following commands:
@@ -59,21 +59,22 @@ SUPERADMIN - A user OUTSIDE of the unit, by default. Not subject to attendance (
 
 REQUIREMENTS
 
-This system runs on python and will require a python IDE, such as spyder.
-This system will also require external modules, in this case schedule and pyTelegramBotAPI. For spyder, install with these commands:
+This system runs on python.
+This system will also require external modules, in this case schedule and pyTelegramBotAPI. With python3 PIP, install with these commands:
 
-! pip3 install pyTelegramBotAPI
+$ pip3 install pyTelegramBotAPI
 
-! pip3 install schedule
+$ pip3 install schedule
 
 As mentioned, this system requires a computer to run on. I would recommend using a SBC such as a low-cost Raspberry Pi (a model with wifi acceess) for this.
+I have not tested running the bot on a cloud service.
 This system requires a new Telegram bot account to run on. To do this, go to BotFather on Telegram via @BotFather to create a new bot.
 
 
 
 SETUP
 
-Upon downloading the code in your preferred IDE, set up the variables which are near the start of the script, replacing all text within the single quotation marks. It will look exactly like this:
+Upon downloading the code, set up the variables which are near the start of the script, replacing all text within the single quotation marks. It will look exactly like this:
 
 key = 'Insert the key for yout telegram bot here.'
 
@@ -108,8 +109,10 @@ options = [
 After which, the bot can be run inside the IDE. For this method, the IDE must be left open for the bot to continue running. Test if the bot is alive with /start.
 From then on, the bot will begin to leave a file, labelled as 'databaseDDMMYY.txt' in your system files. This is the bot's backup memory in case of system shutdown. It will only leave one database file in the system, deleting all older database files except the file of the day itself.
 
-If the bot is run on a Raspberry Pi or other linux/unix based computers, the bot can be set up to run on bootup. In the script /etc/rc.local, add this line above the 'exit 0' line:
+If the bot is run on a Raspberry Pi or other linux/unix based computers, the bot can be set up to run on boot. In the script /etc/rc.local, add this line above the 'exit 0' line:
 
-'sudo python3 /path to program(change this accordingly/attendancebot.py'
+'sudo python3 /path to program/attendancebot.py'
 
-Either way, the program will run in the background without interrupting usage of the computer for other purposes.
+The program will run in the background without interrupting usage of the computer for other purposes.
+
+This was a very interesting first practical project/application with programming!

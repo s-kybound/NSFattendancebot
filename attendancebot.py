@@ -102,6 +102,17 @@ def procreload(message):
     nmessage = bot.reply_to(message, 'Is it the start of the day? Do you need me to reset all attendances?', reply_markup = markup)
     bot.register_next_step_handler(nmessage, procnewday)
 
+def procnewday(message):
+    global userbase
+    chat_id = message.chat.id
+    user = str(chat_id)
+    procstr = message.text
+    if procstr == 'NEWDAY':
+        bot.send_message(chat_id,'OK. Resetting all attendance values (less long term absence)')
+        newday()
+    else:
+        bot.send_message(chat_id,'OK. Leaving attendance values as is.')
+
 def newday():
     global userbase
     for users in userbase.keys():
@@ -259,7 +270,7 @@ def poke(message):  #for admins to directly take over in annoying everyone who h
             for users in userbase.keys():  #selectively messages everyone who hasn't responded
                 if userbase[users][7] == 'NIL':
                     try:
-                        nmessage = bot.send_message(int(users),'%s, it is time %s! Are you present today?' % (userbase[user][0], datetime.now().strftime('%H:%M:%S')), reply_markup = markup)
+                        nmessage = bot.send_message(int(users),'%s, it is time %s! Are you present today?' % (userbase[users][0], datetime.now().strftime('%H:%M:%S')), reply_markup = markup)
                         bot.register_next_step_handler(nmessage, procprescence)
                     except telebot.apihelper.ApiTelegramException:
                         print(userbase[user])  #this will return the particulars of someone who has either blocked or stopped the bot without /removeme. This previously broke the bot.
@@ -423,7 +434,7 @@ def removeme(message):  #deletes your data from the userbase and database.txt
     else:
         bot.reply_to(message,'Data removed from system.')
 
-#this section needs to be revampedvvv
+
 @bot.message_handler(commands=['longtermabsence'])
 def lta(message):
     global userbase
@@ -462,7 +473,7 @@ def proclta(message):  #alerts admins on reason for absence
     for users in userbase.keys():
         if userbase[users][4] == True:
             bot.send_message(users,'%s has activated long term absence for reason: %s' % ((userbase[user][1]+' '+userbase[user][2]), userbase[user][7]))
-#
+
 @bot.message_handler(commands=['superadminbroadcast'])
 def sadminbroadcast(message):  #broadcasts superadmin message
     global userbase
@@ -512,9 +523,8 @@ def help(message):
 /reportattendance - Manually enter attendance.
 /removeme - Removes you from the system. Use when you leave the unit.
 /longtermabsence - For long-duration leaves or events such as overseas exercise. Use on first and last day of leave.
-/misc - Displays some miscellaneous functions.
+/misc - Displays miscellaneous functions.
 /admin - Password protected. Grants superadmin or admin access if successful.
-settings - currently nonexistent. Allows users to change specific particulars.
 ''')
 
 @bot.message_handler(commands=['misc'])
@@ -530,7 +540,7 @@ def admin(message):  #function to request for admin or superadmin access. if adm
     user = str(chat_id)
     markup = telebot.types.ForceReply()
     try:
-        if userbase[user][5] == True:
+        if userbase[user][4] == True:
             bot.send_message(message.chat.id,'''ADMIN COMMANDS
 /poke - Reminds anyone who hasn't entered attendance to do so.
 /getsimpleps - Returns total and present strength.
@@ -539,7 +549,6 @@ def admin(message):  #function to request for admin or superadmin access. if adm
 /feedme - updates the local userbase with a text file given by you
 /giveme - gives user a text file with all the data from the system
 /superadmin - Password protected. Grants admin access if successful.
-chuser - Forces changes on a user's settings.
 ''')
         else:
             nmessage = bot.reply_to(message, '%s, please enter the password:' % userbase[user][0], reply_markup = markup)
@@ -558,8 +567,6 @@ def superadmin(message): #functions to request for superadmin access. if superad
         if userbase[user][5] == True:
             bot.send_message(message.chat.id,'''SUPERADMIN COMMANDS
 /superadminbroadcast - SUPERADMIN command. Broadcasts a message to all users of the bot.
-deluser - Force removes a user from the system.
-bsettings - Changes base settings on how the bot operates.
 ''')
         else:
             nmessage = bot.reply_to(message, '%s, please enter the password:' % userbase[user][0], reply_markup = markup)

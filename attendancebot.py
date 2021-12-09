@@ -117,7 +117,7 @@ def newday():
     global userbase
     for users in userbase.keys():
         if userbase[users][6] == False:
-            userbase[users][7] == 'NIL'
+            userbase[users][7] = 'NIL'
 
 @bot.message_handler(commands=['info'])
 def info(message):

@@ -48,12 +48,12 @@ def giveme():
     user = str(chat_id)
     try:
         if userbase[user][4] == True:
-		string = ''
-		for key in userbase:
-		    string = f"{string}\n{key}"
-				for item in userbase[key]
-					string = f"{string}\n{item}"
-		bot.send_message(chat_id,string)
+        string = ''
+        for key in userbase:
+            string = f"{string}\n{key}"
+            for item in userbase[key]
+                string = f"{string}\n{item}"
+        bot.send_message(chat_id,string)
         else:
             bot.reply_to(message,'%s, you are not permitted to do this.' % userbase[user][0])
     except KeyError:
@@ -65,25 +65,25 @@ def feedme():
     chat_id = message.chat.id
     user = str(chat_id)
     markup = telebot.types.ForceReply()
-	try:
-	    if userbase[user][4] == True:
-		nmessage = bot.reply_to(message,'Feed me your data', reply_markup = markup)
-		bot.register_next_step_handler(nmessage, procreload)			
+    try:
+        if userbase[user][4] == True:
+            nmessage = bot.reply_to(message,'Feed me your data', reply_markup = markup)
+            bot.register_next_step_handler(nmessage, procreload)			
         else:
             bot.reply_to(message,'%s, you are not permitted to do this.' % userbase[user][0])
     except KeyError:
         bot.send_message(chat_id,'Your particulars are not in the system!')
 
 def procreload(message):
-	global userbase
+    global userbase
     chat_id = message.chat.id
     user = str(chat_id)
     procstr = message.text
     count = 0
     userbase = {}
-	markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard = True)
-	markup.add('NEWDAY')
-	markup.add('MIDDAY')
+    markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard = True)
+    markup.add('NEWDAY')
+    markup.add('MIDDAY')
     for line in procstr.splitlines():
         goodline = line.strip()
         cycle = count % 9
@@ -98,16 +98,16 @@ def procreload(message):
             else:
                 userbase[currentuser].append(False)
         count += 1
-	bot.send_message(chat_id,'Data Uploaded.')
+    bot.send_message(chat_id,'Data Uploaded.')
     nmessage = bot.reply_to(message, 'Is it the start of the day? Do you need me to reset all attendances?', reply_markup = markup)
     bot.register_next_step_handler(nmessage, procnewday)
 
 def newday():
     global userbase
-		for users in userbase.keys():
-			if userbase[currentuser][6] == False:
-				userbase[currentuser[7] == 'NIL'  #erases previous data, bot will now annoy you
-						 
+    for users in userbase.keys():
+        if userbase[currentuser][6] == False:
+            userbase[currentuser[7] == 'NIL'  #erases previous data, bot will now annoy you
+
 @bot.message_handler(commands=['info'])
 def info(message):  #returns info on bot
     bot.reply_to(message, '''ATTENDANCE PROGRAM V1.5
@@ -588,7 +588,7 @@ def procadmin(message):  #processes password entered
         userbase[user][4] = True
         userbase[user][5] = True
         if sadminingroup == False:
-			userbase[user][6] = True
+            userbase[user][6] = True
             userbase[user][7] = 'SADMIN'  #a unique attendance value that makes the bot never prompt you; superadmin is not part of the group
         bot.reply_to(message, 'Recognised as superadmin.', reply_markup = markup)
     else:

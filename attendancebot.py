@@ -42,25 +42,25 @@ sadminingroup = False
 bot = telebot.TeleBot(key)
 
 @bot.message_handler(commands=['giveme'])
-def giveme():
+def giveme(message):
     global userbase
     chat_id = message.chat.id
     user = str(chat_id)
     try:
         if userbase[user][4] == True:
-        string = ''
-        for key in userbase:
-            string = f"{string}\n{key}"
-            for item in userbase[key]
-                string = f"{string}\n{item}"
-        bot.send_message(chat_id,string)
+            string = ""
+            for key in userbase:
+                string = f"{string}\n{key}"
+                for item in userbase[key]:
+                    string = f"{string}\n{item}"
+            bot.send_message(chat_id,string)
         else:
             bot.reply_to(message,'%s, you are not permitted to do this.' % userbase[user][0])
     except KeyError:
         bot.send_message(chat_id,'Your particulars are not in the system!')
 
 @bot.message_handler(commands=['feedme'])
-def feedme():	
+def feedme(message):	
     global userbase
     chat_id = message.chat.id
     user = str(chat_id)
@@ -106,20 +106,20 @@ def newday():
     global userbase
     for users in userbase.keys():
         if userbase[currentuser][6] == False:
-            userbase[currentuser[7] == 'NIL'  #erases previous data, bot will now annoy you
+            userbase[currentuser][7] == 'NIL'
 
 @bot.message_handler(commands=['info'])
-def info(message):  #returns info on bot
+def info(message):
     bot.reply_to(message, '''ATTENDANCE PROGRAM V1.5
 Github: https://github.com/s-kybound/NSFattendancebot
 ''')
-
+ 
 @bot.message_handler(commands=['start'])
 def start(message):  #enters, or reenters, a user's data into the system as well as the external database.txt
     markup = telebot.types.ForceReply()
     nmessage = bot.reply_to(message, 'Please enter the password to join the group.', reply_markup = markup)
     bot.register_next_step_handler(nmessage, procpass)
-    
+   
 def procpass(message):  #deals with unauthorized entry
     global userbase
     global passw
@@ -134,7 +134,7 @@ How would you like me to address you?
 ''', reply_markup = markup)
         bot.register_next_step_handler(nmessage, procnick)
     else:
-        
+        bot.send_message(chat_id,"Password is incorrect.")
 
 def procnick(message):  #processes the nickname entered and prompts for rank
     global userbase

@@ -48,12 +48,12 @@ def giveme():
     user = str(chat_id)
     try:
         if userbase[user][4] == True:
-			string = ''
-			for key in userbase:
-				string = f"{string}\n{key}"
+		string = ''
+		for key in userbase:
+			string = f"{string}\n{key}"
 				for item in userbase[key]
 					string = f"{string}\n{item}"
-			bot.send_message(chat_id,string)
+		bot.send_message(chat_id,string)
         else:
             bot.reply_to(message,'%s, you are not permitted to do this.' % userbase[user][0])
     except KeyError:
@@ -67,8 +67,8 @@ def feedme():
     markup = telebot.types.ForceReply()
 	try:
 	    if userbase[user][4] == True:
-			nmessage = bot.reply_to(message,'Feed me your data', reply_markup = markup)
-			bot.register_next_step_handler(nmessage, procreload)			
+		nmessage = bot.reply_to(message,'Feed me your data', reply_markup = markup)
+		bot.register_next_step_handler(nmessage, procreload)			
         else:
             bot.reply_to(message,'%s, you are not permitted to do this.' % userbase[user][0])
     except KeyError:
@@ -107,6 +107,7 @@ def newday():
 		for users in userbase.keys():
 			if userbase[currentuser][6] == False:
 				userbase[currentuser[7] == 'NIL'  #erases previous data, bot will now annoy you
+						 
 @bot.message_handler(commands=['info'])
 def info(message):  #returns info on bot
     bot.reply_to(message, '''ATTENDANCE PROGRAM V1.5

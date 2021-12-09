@@ -10,28 +10,25 @@ ABOUT
 This is a simple attendance bot that I have designed for NSF ASAs to use. As it is, it is designed for usage in more office-like environments.
 It prompts users for their attendance every 30 minutes, based on start and end times that you enter. After which, admins can access the attendance data to enter into parade state.
 
-It is designed to run on a (Linux-based) computer that is active, at least for office hours. It can be run 24/7 without issue. It is able to save and restore its information,
-however, for security purposes, it deletes any previous day information after reloading it into its system.
+I have only tested this program on Raspberry Pi OS. There, it can be run 24/7 without issue.
 
 It has the following commands:
 
 /start - Enter/reenter your particulars.
 
-/help - Brings up the list of all commands available.
+/commands - Brings up the list of all commands available.
 
-/info - Returns info about the bot, its version, limitations, etc.
+/info - Sends a link to this Github page.
 
-/feedback - Provide feedback.
-
-/removeme - Removes you from the system. Use when you leave the unit.
+/removeme - Removes you from the bot. Use when you leave the unit.
 
 /reportattendance - Manually enter attendance.
 
-/test - Returns the particulars you have in the system.
+/test - Returns the particulars you have in the bot.
 
-/documentation - Shows the GitHub page of the bot.
+/admin - Password protected. Grants superadmin or admin access if successful. If admin, provides list of admin commands.
 
-/adminaccess - Password protected. Grants superadmin or admin access if successful.
+/superadmin - Password protected. Grants Superadmin. If superadmin, providdes list of superadmin commands.
 
 /longtermabsence - For long-duration leaves or events such as overseas exercise. Use on first and last day of leave.
 
@@ -42,6 +39,10 @@ It has the following commands:
 /holiday - ADMIN command. DEACTIVATES autoattendance for the day by assigning everyone(who hasn't replied) a HOLIDAY value.
 
 /superadminbroadcast - SUPERADMIN command. Broadcasts a message to all users of the bot.
+
+/giveme - Obtain a text with data on all the data the bot holds.
+
+/feedme - Using aformentioned text, reenter it to a fresh copy of the bot to restore its data.
 
 As for reasons for absence, I have left a general list of these in the bot, however they can be changed.
 
@@ -59,16 +60,16 @@ SUPERADMIN - A user OUTSIDE of the unit, by default. Not subject to attendance (
 
 REQUIREMENTS
 
-This system runs on python.
-This system will also require external modules, in this case schedule and pyTelegramBotAPI. With python3 PIP, install with these commands:
+This program requires Python 3.
+This program will also require external modules, in this case schedule and pyTelegramBotAPI. With python3 PIP, install with these commands:
 
 $ pip3 install pyTelegramBotAPI
 
 $ pip3 install schedule
 
-As mentioned, this system requires a computer to run on. I would recommend using a SBC such as a low-cost Raspberry Pi (a model with wifi acceess) for this.
-I have not tested running the bot on a cloud service.
-This system requires a new Telegram bot account to run on. To do this, go to BotFather on Telegram via @BotFather to create a new bot.
+I would recommend using a SBC such as a low-cost Raspberry Pi (a model with wifi acceess) for this.
+I have not yet tested running the bot on a cloud service.
+A new Telegram bot account is needed. To do this, go to BotFather on Telegram via @BotFather to create a new bot.
 
 
 
@@ -106,13 +107,10 @@ options = [
     'SAILING', 'OVERSEAS'
     ]  
     
-After which, the bot can be run inside the IDE. For this method, the IDE must be left open for the bot to continue running. Test if the bot is alive with /start.
-From then on, the bot will begin to leave a file, labelled as 'databaseDDMMYY.txt' in your system files. This is the bot's backup memory in case of system shutdown. It will only leave one database file in the system, deleting all older database files except the file of the day itself.
-
 If the bot is run on a Raspberry Pi or other linux/unix based computers, the bot can be set up to run on boot. In the script /etc/rc.local, add this line above the 'exit 0' line:
 
 'sudo python3 /path to program/attendancebot.py'
 
 The program will run in the background without interrupting usage of the computer for other purposes.
 
-This was a very interesting first practical project/application with programming!
+This was a very interesting first practical project/application of my programming knowledge!

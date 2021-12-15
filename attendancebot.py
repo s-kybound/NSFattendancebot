@@ -115,6 +115,8 @@ def procnewday(message):
 
 def newday():
     global userbase
+    global today
+    today = date.today()
     for users in userbase.keys():
         if userbase[users][6] == False:
             userbase[users][7] = 'NIL'

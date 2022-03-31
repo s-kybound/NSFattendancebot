@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ATTENDANCE PROGRAM V1.5
+ATTENDANCE PROGRAM V1.51
 Created on Tue Nov 24 23:06:18 2020
 @author: sky
 """

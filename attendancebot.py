@@ -207,7 +207,7 @@ def newday():
 @bot.message_handler(commands=['info'])
 def info(message):
     bot.reply_to(message, '''ATTENDANCE PROGRAM V1.51
-Github: https://github.com/s-kybound/NSFattendancebot
+Github: https://github.com/s-kybound/NSFattendancebot/tree/Unclouded
 ''')
  
 @bot.message_handler(commands=['start'])

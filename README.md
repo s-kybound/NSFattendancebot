@@ -1,9 +1,4 @@
 # NSFattendancebot
-DISCLAIMER
-
-I built this bot for self-interest, as a way to improve my own programming skill, and to improve 'quality-of-life' at work. I take no responsibility for what you do with this project, and will not be held responsible for any damages incurred.
-
-
 
 ABOUT
 
@@ -68,7 +63,6 @@ $ pip3 install pyTelegramBotAPI
 $ pip3 install schedule
 
 I would recommend using a SBC such as a low-cost Raspberry Pi (a model with wifi acceess) for this.
-I have not yet tested running the bot on a cloud service.
 A new Telegram bot account is needed. To do this, go to BotFather on Telegram via @BotFather to create a new bot.
 
 

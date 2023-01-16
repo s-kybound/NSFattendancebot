@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ATTENDANCE PROGRAM V1.5
+ATTENDANCE PROGRAM V1.51
 Created on Tue Nov 24 23:06:18 2020
 @author: sky
 """
@@ -10,8 +10,9 @@ import telebot
 import time
 import threading
 import schedule
+import os
 #required python package schedule
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 key = 'Your bot token key here'
 passw = 'A password for everyone meant to use the bot' 
@@ -19,6 +20,7 @@ password = 'A password only for admins'  #admin password
 highpassword = 'A password only for superadmins'  #superadmin password
 starttime = 'HH:MM'  #string to denote time to activate autoattendance, 24H clock in format 'HH:MM'
 endtime = 'HH:MM'  #string to denote time to deactivate autoattendance, 24H clock in format 'HH:MM'
+database = 'groupNameHere' #this will be the name of the database file in the system
 ranks = [
     'COL', 'SLTC', 'LTC',
     'MAJ', 'CPT', 'LTA',
@@ -41,6 +43,85 @@ sadminingroup = False
 
 bot = telebot.TeleBot(key)
 
+def init():  #upon booting, searches for the database.txt for the current day. if unable to find, creates a new file, as well as resetting attendances, from the latest database.txt file, up to 10 years ago. else creates a new file.
+    global userbase
+    global today
+    global database
+    today = date.today()
+    print('Attempting to restore database...')
+    try:
+        syncmemories()  #does not tamper with attendance values, as this is most likely rebooting in the middle of the day due to error
+        print('Database restored from today.')
+    except FileNotFoundError:
+        for datediff in range(1,3650,1):  #searches for older databases up to 10 years
+            try:
+                previousday = today - timedelta(days = datediff)
+                olddatabase = database + previousday.strftime('%d%m%y') + '.txt'
+                with open(olddatabase, 'r') as sync:
+                    procstr = sync.readlines()
+                sync.close()
+                count = 0
+                userbase = {}
+                for line in procstr:
+                    goodline = line.strip()
+                    cycle = count % 9
+                    if cycle == 0:  #user id
+                        userbase[goodline] = []
+                        currentuser = goodline
+                    if cycle in range(1,5) or cycle == 8:  #strings
+                        userbase[currentuser].append(goodline)
+                    if cycle in range(5,8):  #boolean
+                        if goodline == 'True':
+                            userbase[currentuser].append(True)
+                        else:
+                            userbase[currentuser].append(False)
+                    count += 1
+                uploadmemories()
+                os.remove(olddatabase)
+                print('Database restored from %s.' % previousday.strftime('%d%m%y'))
+                break
+            except FileNotFoundError:
+                continue
+        if userbase == {}:
+            print('No previous database found.')
+            uploadmemories()
+
+def syncmemories(): #obtains data from saved file
+    global userbase
+    global currentdatabase
+    with open(currentdatabase, 'r') as sync:
+        procstr = sync.readlines()
+    sync.close()
+    count = 0
+    userbase = {}
+    for line in procstr:
+        goodline = line.strip()
+        cycle = count % 9
+        if cycle == 0:  #user id
+            userbase[goodline] = []
+            currentuser = goodline
+        if cycle in range(1,5) or cycle == 8:  #strings
+            userbase[currentuser].append(goodline)
+        if cycle in range(5,8):  #boolean
+            if goodline == 'True':
+                userbase[currentuser].append(True)
+            else:
+                userbase[currentuser].append(False)
+        count += 1
+    
+def uploadmemories():  #overwrites the data inside of the current database.txt file with the internal variables from userbase
+    global userbase
+    global currentdatabase
+    listtoupload = []  #formats the userbase into format used by database.txt
+    for key in userbase:
+        listtoupload.append(key)
+        for item in userbase[key]:
+            listtoupload.append(item)
+    with open(currentdatabase, 'w') as filehandle:
+        for items in listtoupload:
+            filehandle.write('%s\n' % items)
+        filehandle.close()
+
 @bot.message_handler(commands=['giveme'])
 def giveme(message):
     global userbase
@@ -53,7 +134,7 @@ def giveme(message):
                 string = f"{string}\n{key}"
                 for item in userbase[key]:
                     string = f"{string}\n{item}"
-            bot.send_message(chat_id,string)
+            bot.send_message(chat_id, string)
         else:
             bot.reply_to(message,'%s, you are not permitted to do this.' % userbase[user][0])
     except KeyError:
@@ -99,6 +180,7 @@ def procreload(message):
                 userbase[currentuser].append(False)
         count += 1
     bot.send_message(chat_id,'Data Uploaded.')
+    uploadmemories()
     nmessage = bot.reply_to(message, 'Is it the start of the day? Do you need me to reset all attendances?', reply_markup = markup)
     bot.register_next_step_handler(nmessage, procnewday)
 
@@ -120,11 +202,12 @@ def newday():
     for users in userbase.keys():
         if userbase[users][6] == False:
             userbase[users][7] = 'NIL'
+    uploadmemories()
 
 @bot.message_handler(commands=['info'])
 def info(message):
-    bot.reply_to(message, '''ATTENDANCE PROGRAM V1.5
-Github: https://github.com/s-kybound/NSFattendancebot
+    bot.reply_to(message, '''ATTENDANCE PROGRAM V1.51
+Github: https://github.com/s-kybound/NSFattendancebot/tree/Unclouded
 ''')
  
 @bot.message_handler(commands=['start'])
@@ -156,6 +239,7 @@ def procnick(message):  #processes the nickname entered and prompts for rank
     user = str(chat_id)
     nick = message.text.strip()  #cleans up extra spaces
     userbase[user][0] = nick
+    uploadmemories()
     markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard = True)
     for srank in ranks:
         markup.add(srank)
@@ -177,6 +261,7 @@ def procrank(message):  #processes the rank entered and prompts for full name
         bot.register_next_step_handler(nmessage, procrank)
     else:
         userbase[user][1] = rank
+        uploadmemories()
         markup = telebot.types.ForceReply()
         nmessage = bot.reply_to(message, 'May I have your full name?', reply_markup = markup)
         bot.register_next_step_handler(nmessage, procname)
@@ -187,6 +272,7 @@ def procname(message):  #processes full name and prompts for terms of service
     user = str(chat_id)
     name = message.text.title().strip()  #capitalises every word, cleans up extra spaces
     userbase[user][2] = name
+    uploadmemories()
     tos = ['REG', 'NSF']
     markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard = True)
     for serv in tos:
@@ -212,6 +298,7 @@ def proctos(message):  #processes terms of service, enters NIL attendance and ad
         userbase[user][5] = False
         userbase[user][6] = False  #long absence value
         userbase[user][7] = 'NIL'  #placeholder attendance
+        uploadmemories()
         markup = telebot.types.ReplyKeyboardRemove()
         bot.send_message(chat_id,'''Particulars uploaded!
 Nickname = %s
@@ -309,6 +396,7 @@ def procprescence(message):  #processes attendance entered - present or not, if 
         markup = telebot.types.ReplyKeyboardRemove()
         bot.reply_to(message, '%s, thank you!' % userbase[user][0], reply_markup = markup)
         userbase[user][7] = attendance
+        uploadmemories()
     else:
         markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard = True)
         for option in options:
@@ -324,11 +412,13 @@ def procprescence2(message):  #process additional attendance prompt on reason of
     markup = telebot.types.ReplyKeyboardRemove()
     bot.reply_to(message, '%s, thank you!' % userbase[user][0], reply_markup = markup)
     userbase[user][7] = attendance
+    uploadmemories()
 
 @bot.message_handler(commands=['getsimpleps'])
 def abridgedPS(message):  #returns the total and present strength
     global userbase
     global today
+    global sadminingroup
     chat_id = message.chat.id
     user = str(chat_id)
     try:
@@ -351,7 +441,7 @@ def abridgedPS(message):  #returns the total and present strength
                     else:
                         totalnsfs += 1
                         presentnsfs += 1
-                elif userbase[users][7] == 'SADMIN':  #superadmin is not counted as part of the group
+                elif userbase[users][7] == 'SADMIN' and not sadminingroup:  #superadmin is not counted as part of the group if flag is active
                     continue
                 else:
                     total += 1
@@ -381,6 +471,7 @@ NSF: %s
 def PS(message):  #returns more detailed data on who isn't here - reason, followed by total number, then rank + names, ordered alphabetically by their ranks
     global userbase
     global today
+    global sadminingroup
     chat_id = message.chat.id
     user = str(chat_id)
     try:
@@ -394,7 +485,7 @@ def PS(message):  #returns more detailed data on who isn't here - reason, follow
                     present += 1
                     presentroster.append(userbase[users][1]+' '+userbase[users][2])
                     presentroster.sort()
-                elif userbase[users][7] == 'SADMIN':
+                elif userbase[users][7] == 'SADMIN' and not sadminingroup:
                     continue
                 else:
                     processing.update({users:userbase[users]})
@@ -435,6 +526,7 @@ def removeme(message):  #deletes your data from the userbase and database.txt
         bot.send_message(chat_id,'Your particulars are not in the system!')
     else:
         bot.reply_to(message,'Data removed from system.')
+        uploadmemories()
 
 
 @bot.message_handler(commands=['longtermabsence'])
@@ -446,6 +538,7 @@ def lta(message):
     try:
         if userbase[user][6] == True:  #deactivates this status
             userbase[user][6] = False
+            uploadmemories()
             yesno = ['PRESENT', 'ABSENT']
             markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard = True)
             for option in yesno:
@@ -456,6 +549,7 @@ def lta(message):
         else:  #activates status
             bot.reply_to(message,'Long-term absence activated. Please deactivate on the morning this absence ends.')
             userbase[user][6] = True  #placeholder value to deter bot from prompting
+            uploadmemories()
             markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard = True)
             for option in options:
                 markup.add(option)
@@ -472,6 +566,7 @@ def proclta(message):  #alerts admins on reason for absence
     markup = telebot.types.ReplyKeyboardRemove()
     bot.reply_to(message, '%s, thank you! Reason sent to admins.' % userbase[user][0], reply_markup = markup)
     userbase[user][7] = attendance
+    uploadmemories()
     for users in userbase.keys():
         if userbase[users][4] == True:
             bot.send_message(users,'%s has activated long term absence for reason: %s' % ((userbase[user][1]+' '+userbase[user][2]), userbase[user][7]))
@@ -592,6 +687,7 @@ def procadmin(message):  #processes password entered
                     bot.send_message(users,'%s has become an admin' % (userbase[user][1]+' '+userbase[user][2]))  #alerts admins
         userbase[user][4] = True
         userbase[user][5] = False
+        uploadmemories()
         bot.reply_to(message, 'Recognised as admin.', reply_markup = markup)
     elif attempt == highpassword:
         userbase[user][4] = True
@@ -599,6 +695,7 @@ def procadmin(message):  #processes password entered
         if sadminingroup == False:
             userbase[user][6] = True
             userbase[user][7] = 'SADMIN'  #a unique attendance value that makes the bot never prompt you; superadmin is not part of the group
+        uploadmemories()
         bot.reply_to(message, 'Recognised as superadmin.', reply_markup = markup)
     else:
         bot.reply_to(message, 'Incorrect entry!', reply_markup = markup)
@@ -644,6 +741,8 @@ def holidaycont():
 try:
     today = date.today()
     userbase = {}
+    currentdatabase = database + today.strftime('%d%m%y') + '.txt'
+    init()
     run_threaded(on)
     schedule.every().day.at('00:05').do(run_threaded, newday)
     schedule.every().day.at(endtime).do(run_threaded, stopattendance)
